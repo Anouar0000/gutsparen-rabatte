@@ -1,0 +1,58 @@
+.post-type-gso_offer .column-gso_shortcode {
+    width: 120px;
+}
+
+.post-type-gso_offer .column-gso_shortcode .gso-copy-shortcode {
+    white-space: nowrap;
+}
+
+.gso-logo-field {
+    display: grid;
+    gap: 12px;
+}
+
+.gso-logo-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: min(100%, 260px);
+    min-height: 120px;
+    padding: 12px;
+    border: 1px solid #dcdcde;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.gso-logo-preview.is-empty {
+    border-style: dashed;
+    background: #f6f7f7;
+}
+
+.gso-logo-preview-image {
+    display: block;
+    max-width: 100%;
+    max-height: 96px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
+.gso-logo-placeholder {
+    color: #646970;
+}
+
+.gso-logo-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+@media screen and (max-width: 782px) {
+    .post-type-gso_offer .wp-list-table td.column-gso_shortcode::before {
+        display: none;
+    }
+
+    .post-type-gso_offer .wp-list-table td.column-gso_shortcode {
+        padding-left: 8px;
+    }
+}
