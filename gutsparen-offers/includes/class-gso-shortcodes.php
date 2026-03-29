@@ -201,6 +201,7 @@ class GSO_Shortcodes {
     private function render_banner_html($offer_id) {
         $company_name  = get_post_meta($offer_id, 'gso_company_name', true);
         $discount_code = get_post_meta($offer_id, 'gso_discount_code', true);
+        $show_discount_code = $this->should_show_discount_code($offer_id);
         $target_url    = get_post_meta($offer_id, 'gso_target_url', true);
         $logo_id       = intval(get_post_meta($offer_id, 'gso_logo_id', true));
 
@@ -218,7 +219,7 @@ class GSO_Shortcodes {
             </div>
 
             <div class="gso-banner-content">
-                <?php if (!empty($discount_code)): ?>
+                <?php if ($show_discount_code && !empty($discount_code)): ?>
                     <div class="gso-banner-code-group">
                         <div class="gso-banner-code-row">
                             <span class="gso-banner-code-value"><?php echo esc_html($discount_code); ?></span>
@@ -243,6 +244,8 @@ class GSO_Shortcodes {
     private function render_overview_card_html($offer_id) {
         $company_name      = get_post_meta($offer_id, 'gso_company_name', true);
         $short_description = get_post_meta($offer_id, 'gso_short_description', true);
+        $discount_code     = get_post_meta($offer_id, 'gso_discount_code', true);
+        $show_discount_code = $this->should_show_discount_code($offer_id);
         $target_url        = get_post_meta($offer_id, 'gso_target_url', true);
         $savings_amount    = get_post_meta($offer_id, 'gso_savings_amount', true);
 
@@ -275,6 +278,17 @@ class GSO_Shortcodes {
                         <div class="gso-overview-description"><?php echo wp_kses_post(wpautop($short_description)); ?></div>
                     <?php endif; ?>
                 </div>
+
+                <?php if ($show_discount_code && !empty($discount_code)): ?>
+                    <div class="gso-overview-code-group">
+                        <div class="gso-overview-code-row">
+                            <span class="gso-overview-code-value"><?php echo esc_html($discount_code); ?></span>
+                            <button type="button" class="gso-overview-copy-button" data-gso-copy="<?php echo esc_attr($discount_code); ?>">
+                                Kopieren
+                            </button>
+                        </div>
+                    </div>
+                <?php endif; ?>
 
                 <?php if ($show_button): ?>
                     <?php if (!empty($target_url)): ?>
@@ -383,6 +397,10 @@ class GSO_Shortcodes {
         return ob_get_clean();
     }
 
+    private function should_show_discount_code($offer_id) {
+        return get_post_meta($offer_id, 'gso_show_discount_code', true) !== '0';
+    }
+
     private function get_savings_label($savings_amount) {
         if ($savings_amount === '' || $savings_amount === null) {
             return 'Zum Angebot';
@@ -403,6 +421,8 @@ class GSO_Shortcodes {
         return sprintf('%s %s sparen', $formatted, $euro);
     }
 }
+
+
 
 
 

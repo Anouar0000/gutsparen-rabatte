@@ -52,7 +52,8 @@ class GSO_Admin_Columns {
 
             case 'gso_savings_amount':
                 $value = get_post_meta($post_id, 'gso_savings_amount', true);
-                echo esc_html($value !== '' ? $value . ' €' : '-');
+                $euro = html_entity_decode('&#8364;', ENT_QUOTES, 'UTF-8');
+                echo esc_html($value !== '' ? $value . ' ' . $euro : '-');
                 break;
 
             case 'gso_shortcode':
@@ -72,3 +73,4 @@ class GSO_Admin_Columns {
         }
     }
 }
+

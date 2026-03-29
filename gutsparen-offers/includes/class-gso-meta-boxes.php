@@ -25,6 +25,7 @@ class GSO_Meta_Boxes {
         $company_name      = get_post_meta($post->ID, 'gso_company_name', true);
         $short_description = get_post_meta($post->ID, 'gso_short_description', true);
         $discount_code     = get_post_meta($post->ID, 'gso_discount_code', true);
+        $show_discount_code = get_post_meta($post->ID, 'gso_show_discount_code', true);
         $target_url        = get_post_meta($post->ID, 'gso_target_url', true);
         $is_premium        = get_post_meta($post->ID, 'gso_is_premium', true);
         $is_active         = get_post_meta($post->ID, 'gso_is_active', true);
@@ -78,6 +79,16 @@ class GSO_Meta_Boxes {
             <tr>
                 <th><label for="gso_discount_code">Discount Code</label></th>
                 <td><input type="text" id="gso_discount_code" name="gso_discount_code" value="<?php echo esc_attr($discount_code); ?>" class="regular-text"></td>
+            </tr>
+
+            <tr>
+                <th>Show Discount Code</th>
+                <td>
+                    <label>
+                        <input type="checkbox" name="gso_show_discount_code" value="1" <?php checked($show_discount_code !== '0', true); ?>>
+                        Show the discount code publicly in the banner and overview card
+                    </label>
+                </td>
             </tr>
 
             <tr>
@@ -150,6 +161,7 @@ class GSO_Meta_Boxes {
         update_post_meta($post_id, 'gso_company_name', sanitize_text_field($_POST['gso_company_name'] ?? ''));
         update_post_meta($post_id, 'gso_short_description', wp_kses_post(wp_unslash($_POST['gso_short_description'] ?? '')));
         update_post_meta($post_id, 'gso_discount_code', sanitize_text_field($_POST['gso_discount_code'] ?? ''));
+        update_post_meta($post_id, 'gso_show_discount_code', isset($_POST['gso_show_discount_code']) ? '1' : '0');
         update_post_meta($post_id, 'gso_target_url', esc_url_raw($_POST['gso_target_url'] ?? ''));
         update_post_meta($post_id, 'gso_expiry_date', sanitize_text_field($_POST['gso_expiry_date'] ?? ''));
         update_post_meta($post_id, 'gso_priority', intval($_POST['gso_priority'] ?? 0));
@@ -164,5 +176,6 @@ class GSO_Meta_Boxes {
         }
     }
 }
+
 
 

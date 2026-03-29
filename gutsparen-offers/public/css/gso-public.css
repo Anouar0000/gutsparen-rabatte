@@ -759,12 +759,6 @@
     }
 }
 
-
-
-
-
-
-
 .gso-banner-image {
     min-height: 50px;
     align-items: center;
@@ -775,5 +769,69 @@
 .gso-banner-image img {
     margin: 0 auto;
     object-position: center center;
+}
+
+
+.gso-overview-code-group {
+    padding: 0 12px 10px;
+}
+
+.gso-overview-code-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: stretch;
+    overflow: hidden;
+    border: 2px dashed #0f6e38;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.gso-overview-code-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding: 10px 12px;
+    color: #22313f;
+    font-size: 0.98rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-align: center;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.gso-overview-copy-button {
+    padding: 10px 12px;
+    border: 0;
+    border-left: 1px solid #d7ddd9;
+    background: #fff;
+    color: #4a4a4a;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.gso-overview-copy-button:hover {
+    background: #f7faf8;
+    color: #0f6e38;
+}
+
+@media (max-width: 767px) {
+    .gso-overview-code-group {
+        padding: 0 10px 10px;
+    }
+
+    .gso-overview-code-row {
+        grid-template-columns: 1fr;
+    }
+
+    .gso-overview-copy-button {
+        border-left: 0;
+        border-top: 1px solid #d7ddd9;
+    }
 }
 
