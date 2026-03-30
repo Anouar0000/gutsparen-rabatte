@@ -73,7 +73,7 @@
     min-height: 94px;
     margin: 0 auto;
     overflow: hidden;
-    border: 3px dashed #0f6e38;
+    border: 3px dashed #6bb33f;
     background: #fff;
     box-sizing: border-box;
 }
@@ -111,7 +111,7 @@
 
 .gso-banner-copy-button:hover {
     background: #f7faf8;
-    color: #0f6e38;
+    color: #6bb33f;
 }
 
 .gso-banner-button,
@@ -126,8 +126,8 @@
 .gso-banner-button {
     margin-top: 6px;
     padding: 13px 30px;
-    background: #0f6e38;
-    border: 1px solid #0f6e38;
+    background: #6bb33f;
+    border: 1px solid #6bb33f;
     border-radius: 0;
     font-size: 1rem;
 }
@@ -198,7 +198,7 @@
     padding: 10px 18px;
     border: none;
     border-radius: 999px;
-    background: #8db84e;
+    background: #6bb33f;
     color: #fff;
     font-weight: 700;
     cursor: pointer;
@@ -282,6 +282,7 @@
     flex: 0 0 280px;
     width: 280px;
     min-width: 280px;
+    margin-bottom: 20px;
     scroll-snap-align: start;
 }
 
@@ -364,7 +365,7 @@
     margin: 0 12px 12px;
     padding: 11px 18px;
     border-radius: 999px;
-    background: #9dc55b;
+    background: #6bb33f;
     color: #fff !important;
     text-align: center;
 }
@@ -780,7 +781,7 @@
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: stretch;
     overflow: hidden;
-    border: 2px dashed #0f6e38;
+    border: 2px dashed #6bb33f;
     border-radius: 12px;
     background: #fff;
 }
@@ -816,7 +817,7 @@
 
 .gso-overview-copy-button:hover {
     background: #f7faf8;
-    color: #0f6e38;
+    color: #6bb33f;
 }
 
 @media (max-width: 767px) {
@@ -906,4 +907,5 @@
         font-size: 0.95rem;
     }
 }
+
 

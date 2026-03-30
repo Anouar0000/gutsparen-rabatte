@@ -21,19 +21,20 @@ class GSO_Meta_Boxes {
     public function render_offer_details_box($post) {
         wp_nonce_field('gso_save_offer_details', 'gso_offer_nonce');
 
-        $offer_title       = $post->post_title;
-        $company_name      = get_post_meta($post->ID, 'gso_company_name', true);
-        $short_description = get_post_meta($post->ID, 'gso_short_description', true);
-        $discount_code     = get_post_meta($post->ID, 'gso_discount_code', true);
+        $offer_title        = $post->post_title;
+        $company_name       = get_post_meta($post->ID, 'gso_company_name', true);
+        $short_description  = get_post_meta($post->ID, 'gso_short_description', true);
+        $long_description   = get_post_meta($post->ID, 'gso_long_description', true);
+        $discount_code      = get_post_meta($post->ID, 'gso_discount_code', true);
         $show_discount_code = get_post_meta($post->ID, 'gso_show_discount_code', true);
-        $target_url        = get_post_meta($post->ID, 'gso_target_url', true);
-        $is_premium        = get_post_meta($post->ID, 'gso_is_premium', true);
-        $is_active         = get_post_meta($post->ID, 'gso_is_active', true);
-        $expiry_date       = get_post_meta($post->ID, 'gso_expiry_date', true);
-        $priority          = get_post_meta($post->ID, 'gso_priority', true);
-        $logo_id           = intval(get_post_meta($post->ID, 'gso_logo_id', true));
-        $savings_amount    = get_post_meta($post->ID, 'gso_savings_amount', true);
-        $logo_preview      = $logo_id ? wp_get_attachment_image($logo_id, 'medium', false, ['class' => 'gso-logo-preview-image']) : '';
+        $target_url         = get_post_meta($post->ID, 'gso_target_url', true);
+        $is_premium         = get_post_meta($post->ID, 'gso_is_premium', true);
+        $is_active          = get_post_meta($post->ID, 'gso_is_active', true);
+        $expiry_date        = get_post_meta($post->ID, 'gso_expiry_date', true);
+        $priority           = get_post_meta($post->ID, 'gso_priority', true);
+        $logo_id            = intval(get_post_meta($post->ID, 'gso_logo_id', true));
+        $savings_amount     = get_post_meta($post->ID, 'gso_savings_amount', true);
+        $logo_preview       = $logo_id ? wp_get_attachment_image($logo_id, 'medium', false, ['class' => 'gso-logo-preview-image']) : '';
 
         ?>
         <table class="form-table">
@@ -73,7 +74,18 @@ class GSO_Meta_Boxes {
 
             <tr>
                 <th><label for="gso_short_description">Short Description</label></th>
-                <td><textarea id="gso_short_description" name="gso_short_description" rows="4" class="large-text"><?php echo esc_textarea($short_description); ?></textarea></td>
+                <td>
+                    <textarea id="gso_short_description" name="gso_short_description" rows="4" class="large-text"><?php echo esc_textarea($short_description); ?></textarea>
+                    <p class="description">Used for banners and smaller placements.</p>
+                </td>
+            </tr>
+
+            <tr>
+                <th><label for="gso_long_description">Long Description</label></th>
+                <td>
+                    <textarea id="gso_long_description" name="gso_long_description" rows="6" class="large-text"><?php echo esc_textarea($long_description); ?></textarea>
+                    <p class="description">Used on the overview page cards. If empty, the short description is used as fallback.</p>
+                </td>
             </tr>
 
             <tr>
@@ -160,6 +172,7 @@ class GSO_Meta_Boxes {
 
         update_post_meta($post_id, 'gso_company_name', sanitize_text_field($_POST['gso_company_name'] ?? ''));
         update_post_meta($post_id, 'gso_short_description', wp_kses_post(wp_unslash($_POST['gso_short_description'] ?? '')));
+        update_post_meta($post_id, 'gso_long_description', wp_kses_post(wp_unslash($_POST['gso_long_description'] ?? '')));
         update_post_meta($post_id, 'gso_discount_code', sanitize_text_field($_POST['gso_discount_code'] ?? ''));
         update_post_meta($post_id, 'gso_show_discount_code', isset($_POST['gso_show_discount_code']) ? '1' : '0');
         update_post_meta($post_id, 'gso_target_url', esc_url_raw($_POST['gso_target_url'] ?? ''));
@@ -176,6 +189,3 @@ class GSO_Meta_Boxes {
         }
     }
 }
-
-
-

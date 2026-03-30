@@ -157,16 +157,25 @@ class GSO_Shortcodes {
     }
 
     private function render_banner_html($offer_id) {
-        return $this->render_overview_card_html($offer_id);
+        return $this->render_offer_card_html($offer_id, false);
     }
 
     private function render_overview_card_html($offer_id) {
+        return $this->render_offer_card_html($offer_id, true);
+    }
+
+    private function render_offer_card_html($offer_id, $use_long_description) {
         $company_name       = get_post_meta($offer_id, 'gso_company_name', true);
         $short_description  = get_post_meta($offer_id, 'gso_short_description', true);
+        $long_description   = get_post_meta($offer_id, 'gso_long_description', true);
         $discount_code      = get_post_meta($offer_id, 'gso_discount_code', true);
         $show_discount_code = $this->should_show_discount_code($offer_id);
         $target_url         = get_post_meta($offer_id, 'gso_target_url', true);
         $savings_amount     = get_post_meta($offer_id, 'gso_savings_amount', true);
+
+        $description = $use_long_description && !empty($long_description)
+            ? $long_description
+            : $short_description;
 
         $terms = get_the_terms($offer_id, 'gso_offer_category');
         $category_names = (!empty($terms) && !is_wp_error($terms))
@@ -193,8 +202,8 @@ class GSO_Shortcodes {
                     <div class="gso-overview-category"><?php echo esc_html($category_names); ?></div>
                     <h3 class="gso-overview-title"><?php echo esc_html($company_name ?: get_the_title($offer_id)); ?></h3>
 
-                    <?php if (!empty($short_description)): ?>
-                        <div class="gso-overview-description"><?php echo wp_kses_post(wpautop($short_description)); ?></div>
+                    <?php if (!empty($description)): ?>
+                        <div class="gso-overview-description"><?php echo wp_kses_post(wpautop($description)); ?></div>
                     <?php endif; ?>
                 </div>
 
@@ -335,7 +344,30 @@ class GSO_Shortcodes {
     }
 
     private function render_banner_results_html($valid_offers) {
-        return $this->render_overview_results_html($valid_offers);
+        ob_start();
+
+        if (empty($valid_offers)) {
+            return '';
+        }
+        ?>
+        <div class="gso-overview-slider-wrap" data-gso-slider-wrap>
+            <button type="button" class="gso-overview-nav gso-overview-nav-prev" data-gso-slider-prev aria-label="Vorherige Angebote">
+                &#8249;
+            </button>
+
+            <div class="gso-overview-slider" data-gso-slider>
+                <?php foreach ($valid_offers as $offer): ?>
+                    <?php echo $this->render_banner_html($offer['id']); ?>
+                <?php endforeach; ?>
+            </div>
+
+            <button type="button" class="gso-overview-nav gso-overview-nav-next" data-gso-slider-next aria-label="Naechste Angebote">
+                &#8250;
+            </button>
+        </div>
+        <?php
+
+        return ob_get_clean();
     }
 
     private function render_overview_results_html($valid_offers) {
