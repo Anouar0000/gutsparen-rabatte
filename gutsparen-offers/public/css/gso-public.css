@@ -641,7 +641,7 @@
         flex: 0 0 82%;
         width: 82%;
         min-width: 82%;
-        max-width: 82%;
+        /* max-width: 82%; */
         box-sizing: border-box;
     }
 }
@@ -701,9 +701,9 @@
 
     .gso-overview-card {
         flex: 0 0 calc(100% - 44px);
-        width: calc(100% - 44px);
-        min-width: calc(100% - 44px);
-        max-width: calc(100% - 44px);
+        width: calc(100% - 79px);
+        min-width: 245px;
+        max-width: 245px;
     }
 
     .gso-overview-nav {
@@ -742,7 +742,6 @@
 @media (max-width: 767px) {
     .gso-overview-slider-wrap {
         width: 100%;
-        max-width: 300px;
         margin: 0;
         padding-left: 0;
         padding-right: 0;
@@ -832,6 +831,79 @@
     .gso-overview-copy-button {
         border-left: 0;
         border-top: 1px solid #d7ddd9;
+    }
+}
+
+
+@media (min-width: 481px) and (max-width: 767px) {
+    .gso-overview-filters {
+        width: 94%;
+    }
+}
+
+
+.gso-banner-slider-wrap {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.gso-banner-slider {
+    display: flex;
+    align-items: stretch;
+    gap: 18px;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 4px 48px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    box-sizing: border-box;
+}
+
+.gso-banner-slider::-webkit-scrollbar {
+    display: none;
+}
+
+.gso-banner-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 100%;
+    scroll-snap-align: start;
+}
+
+.gso-banner-slide .gso-banner {
+    margin: 0;
+}
+
+.gso-banner-description {
+    width: min(100%, 760px);
+    margin: 0 auto;
+    color: #7d6a52;
+    font-size: 1rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.gso-banner-description p {
+    margin: 0;
+}
+
+.gso-banner-description p + p {
+    margin-top: 10px;
+}
+
+@media (max-width: 767px) {
+    .gso-banner-slider {
+        gap: 12px;
+        padding: 4px 34px 4px 0;
+    }
+
+    .gso-banner-description {
+        font-size: 0.95rem;
     }
 }
 

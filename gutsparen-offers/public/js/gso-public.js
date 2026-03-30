@@ -48,14 +48,14 @@ document.addEventListener('DOMContentLoaded', function() {
         wrap.dataset.gsoSliderBound = '1';
 
         const getStep = function() {
-            const firstCard = slider.querySelector('.gso-overview-card');
-            if (!firstCard) {
+            const firstItem = slider.firstElementChild;
+            if (!firstItem) {
                 return 280;
             }
 
             const styles = window.getComputedStyle(slider);
             const gap = parseFloat(styles.columnGap || styles.gap || '0');
-            return firstCard.getBoundingClientRect().width + gap;
+            return firstItem.getBoundingClientRect().width + gap;
         };
 
         const updateButtons = function() {
@@ -171,6 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     initOverview(document);
 });
+
 
 
 

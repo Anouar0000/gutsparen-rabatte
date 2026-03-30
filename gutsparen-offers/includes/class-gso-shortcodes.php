@@ -32,59 +32,17 @@ class GSO_Shortcodes {
             return $this->render_banner_html($offer_id);
         }
 
-        $query_args = [
-            'post_type'      => 'gso_offer',
-            'posts_per_page' => -1,
-            'post_status'    => 'publish',
-            'meta_query'     => [
-                [
-                    'key'   => 'gso_is_active',
-                    'value' => '1',
-                ]
-            ],
-        ];
-
-        if (!empty($category)) {
-            $query_args['tax_query'] = [
-                [
-                    'taxonomy' => 'gso_offer_category',
-                    'field'    => 'slug',
-                    'terms'    => $category,
-                ]
-            ];
-        }
-
-        $query = new WP_Query($query_args);
-
-        if (!$query->have_posts()) {
-            return '';
-        }
-
-        $valid_offers = [];
-
-        while ($query->have_posts()) {
-            $query->the_post();
-            $current_id = get_the_ID();
-
-            if ($this->is_offer_valid($current_id)) {
-                $valid_offers[] = [
-                    'id' => $current_id,
-                    'priority' => intval(get_post_meta($current_id, 'gso_priority', true)),
-                ];
-            }
-        }
-
-        wp_reset_postdata();
+        $valid_offers = $this->get_filtered_banner_offers($category);
 
         if (empty($valid_offers)) {
             return '';
         }
 
-        usort($valid_offers, function($a, $b) {
-            return $a['priority'] <=> $b['priority'];
-        });
+        if (count($valid_offers) === 1) {
+            return $this->render_banner_html($valid_offers[0]['id']);
+        }
 
-        return $this->render_banner_html($valid_offers[0]['id']);
+        return $this->render_banner_results_html($valid_offers);
     }
 
     public function render_offers_overview_shortcode($atts) {
@@ -199,55 +157,16 @@ class GSO_Shortcodes {
     }
 
     private function render_banner_html($offer_id) {
-        $company_name  = get_post_meta($offer_id, 'gso_company_name', true);
-        $discount_code = get_post_meta($offer_id, 'gso_discount_code', true);
-        $show_discount_code = $this->should_show_discount_code($offer_id);
-        $target_url    = get_post_meta($offer_id, 'gso_target_url', true);
-        $logo_id       = intval(get_post_meta($offer_id, 'gso_logo_id', true));
-
-        $logo_image = $logo_id ? wp_get_attachment_image_url($logo_id, 'medium') : '';
-
-        ob_start();
-        ?>
-        <div class="gso-banner">
-            <div class="gso-banner-image">
-                <?php if ($logo_image): ?>
-                    <img src="<?php echo esc_url($logo_image); ?>" alt="<?php echo esc_attr($company_name ?: get_the_title($offer_id)); ?>">
-                <?php else: ?>
-                    <span class="gso-banner-image-fallback"><?php echo esc_html($company_name ?: get_the_title($offer_id)); ?></span>
-                <?php endif; ?>
-            </div>
-
-            <div class="gso-banner-content">
-                <?php if ($show_discount_code && !empty($discount_code)): ?>
-                    <div class="gso-banner-code-group">
-                        <div class="gso-banner-code-row">
-                            <span class="gso-banner-code-value"><?php echo esc_html($discount_code); ?></span>
-                            <button type="button" class="gso-banner-copy-button" data-gso-copy="<?php echo esc_attr($discount_code); ?>">
-                                Kopieren
-                            </button>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-                <?php if (!empty($target_url)): ?>
-                    <a class="gso-banner-button" href="<?php echo esc_url($target_url); ?>" target="_blank" rel="noopener noreferrer">
-                        weiter zum Shop
-                    </a>
-                <?php endif; ?>
-            </div>
-        </div>
-        <?php
-        return ob_get_clean();
+        return $this->render_overview_card_html($offer_id);
     }
 
     private function render_overview_card_html($offer_id) {
-        $company_name      = get_post_meta($offer_id, 'gso_company_name', true);
-        $short_description = get_post_meta($offer_id, 'gso_short_description', true);
-        $discount_code     = get_post_meta($offer_id, 'gso_discount_code', true);
+        $company_name       = get_post_meta($offer_id, 'gso_company_name', true);
+        $short_description  = get_post_meta($offer_id, 'gso_short_description', true);
+        $discount_code      = get_post_meta($offer_id, 'gso_discount_code', true);
         $show_discount_code = $this->should_show_discount_code($offer_id);
-        $target_url        = get_post_meta($offer_id, 'gso_target_url', true);
-        $savings_amount    = get_post_meta($offer_id, 'gso_savings_amount', true);
+        $target_url         = get_post_meta($offer_id, 'gso_target_url', true);
+        $savings_amount     = get_post_meta($offer_id, 'gso_savings_amount', true);
 
         $terms = get_the_terms($offer_id, 'gso_offer_category');
         $category_names = (!empty($terms) && !is_wp_error($terms))
@@ -305,6 +224,55 @@ class GSO_Shortcodes {
         </article>
         <?php
         return ob_get_clean();
+    }
+
+    private function get_filtered_banner_offers($category) {
+        $query_args = [
+            'post_type'      => 'gso_offer',
+            'posts_per_page' => -1,
+            'post_status'    => 'publish',
+            'meta_query'     => [
+                [
+                    'key'   => 'gso_is_active',
+                    'value' => '1',
+                ],
+            ],
+        ];
+
+        if (!empty($category)) {
+            $query_args['tax_query'] = [
+                [
+                    'taxonomy' => 'gso_offer_category',
+                    'field'    => 'slug',
+                    'terms'    => $category,
+                ],
+            ];
+        }
+
+        $query = new WP_Query($query_args);
+        $valid_offers = [];
+
+        if ($query->have_posts()) {
+            while ($query->have_posts()) {
+                $query->the_post();
+                $current_id = get_the_ID();
+
+                if ($this->is_offer_valid($current_id)) {
+                    $valid_offers[] = [
+                        'id' => $current_id,
+                        'priority' => intval(get_post_meta($current_id, 'gso_priority', true)),
+                    ];
+                }
+            }
+        }
+
+        wp_reset_postdata();
+
+        usort($valid_offers, function($a, $b) {
+            return $a['priority'] <=> $b['priority'];
+        });
+
+        return $valid_offers;
     }
 
     private function get_filtered_overview_offers($selected_category, $search_term) {
@@ -366,6 +334,10 @@ class GSO_Shortcodes {
         return $valid_offers;
     }
 
+    private function render_banner_results_html($valid_offers) {
+        return $this->render_overview_results_html($valid_offers);
+    }
+
     private function render_overview_results_html($valid_offers) {
         ob_start();
 
@@ -421,9 +393,4 @@ class GSO_Shortcodes {
         return sprintf('%s %s sparen', $formatted, $euro);
     }
 }
-
-
-
-
-
 
