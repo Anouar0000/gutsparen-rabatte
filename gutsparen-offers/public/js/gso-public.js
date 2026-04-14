@@ -1,4 +1,91 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const viewedOffers = new Set();
+
+    const getMatomoTracker = function() {
+        return Array.isArray(window._paq) ? window._paq : null;
+    };
+
+    const sendOfferEvent = function(payload) {
+        if (!payload || !payload.offerId || !payload.event) {
+            return;
+        }
+
+        const tracker = getMatomoTracker();
+
+        if (!tracker) {
+            return;
+        }
+
+        const contentName = payload.name || ('Offer #' + payload.offerId);
+        const contentPiece = payload.surface || 'offer';
+        const contentTarget = payload.target || '';
+
+        if (payload.event === 'impression') {
+            tracker.push(['trackContentImpression', contentName, contentPiece, contentTarget]);
+            return;
+        }
+
+        if (payload.event === 'click') {
+            tracker.push(['trackContentInteraction', 'click', contentName, contentPiece, contentTarget]);
+            return;
+        }
+
+        if (payload.event === 'copy') {
+            tracker.push(['trackEvent', 'GutSparen Offer', 'copy_code', contentName]);
+        }
+    };
+
+    const initTracking = function(root) {
+        const trackables = root.querySelectorAll('[data-gso-track-impression]');
+
+        if (!trackables.length) {
+            return;
+        }
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (!entry.isIntersecting || entry.intersectionRatio < 0.5) {
+                    return;
+                }
+
+                const element = entry.target;
+                const offerId = element.getAttribute('data-gso-offer-id');
+                const surface = element.getAttribute('data-gso-track-surface') || '';
+                const key = offerId + ':' + surface;
+
+                if (!offerId || viewedOffers.has(key)) {
+                    observer.unobserve(element);
+                    return;
+                }
+
+                viewedOffers.add(key);
+                observer.unobserve(element);
+
+                sendOfferEvent({
+                    offerId: offerId,
+                    event: 'impression',
+                    surface: surface,
+                    name: element.getAttribute('data-gso-track-name') || '',
+                    target: element.getAttribute('data-gso-track-target') || '',
+                });
+            });
+        }, {
+            threshold: 0.5,
+        });
+
+        trackables.forEach(function(element) {
+            const offerId = element.getAttribute('data-gso-offer-id');
+            const surface = element.getAttribute('data-gso-track-surface') || '';
+            const key = offerId + ':' + surface;
+
+            if (!offerId || viewedOffers.has(key)) {
+                return;
+            }
+
+            observer.observe(element);
+        });
+    };
+
     const initCopyButtons = function(root) {
         const copyButtons = root.querySelectorAll('[data-gso-copy]');
 
@@ -12,12 +99,23 @@ document.addEventListener('DOMContentLoaded', function() {
             button.addEventListener('click', function() {
                 const code = button.getAttribute('data-gso-copy');
                 const originalText = button.textContent;
+                const offer = button.closest('[data-gso-offer-id]');
 
                 if (!code) {
                     return;
                 }
 
                 navigator.clipboard.writeText(code).then(function() {
+                    if (offer) {
+                        sendOfferEvent({
+                            offerId: offer.getAttribute('data-gso-offer-id'),
+                            event: 'copy',
+                            surface: offer.getAttribute('data-gso-track-surface') || '',
+                            name: offer.getAttribute('data-gso-track-name') || '',
+                            target: offer.getAttribute('data-gso-track-target') || '',
+                        });
+                    }
+
                     button.textContent = 'Kopiert';
                     window.setTimeout(function() {
                         button.textContent = originalText;
@@ -89,7 +187,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const initOverview = function(root) {
         root.querySelectorAll('[data-gso-slider-wrap]').forEach(initSlider);
         initCopyButtons(root);
+        initTracking(root);
     };
+
+    document.addEventListener('click', function(event) {
+        const button = event.target.closest('[data-gso-track-click]');
+
+        if (!button) {
+            return;
+        }
+
+        const offer = button.closest('[data-gso-offer-id]');
+
+        if (!offer) {
+            return;
+        }
+
+        sendOfferEvent({
+            offerId: offer.getAttribute('data-gso-offer-id'),
+            event: button.getAttribute('data-gso-track-click') === 'copy' ? 'copy' : 'click',
+            surface: offer.getAttribute('data-gso-track-surface') || '',
+            name: offer.getAttribute('data-gso-track-name') || '',
+            target: button.getAttribute('href') || '',
+        });
+    });
 
     const updateOverviewUrl = function(formData, formAction) {
         const url = new URL(formAction, window.location.origin);

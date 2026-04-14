@@ -185,10 +185,19 @@ class GSO_Shortcodes {
         $image = get_the_post_thumbnail_url($offer_id, 'medium');
         $cta_text = $this->get_savings_label($savings_amount);
         $show_button = !empty($target_url) || $cta_text !== 'Zum Angebot';
+        $surface = $use_long_description ? 'gutsparen_overview' : 'gutsparen_banner';
+        $content_name = $company_name ?: get_the_title($offer_id);
 
         ob_start();
         ?>
-        <article class="gso-overview-card">
+        <article
+            class="gso-overview-card"
+            data-gso-track-impression
+            data-gso-offer-id="<?php echo esc_attr($offer_id); ?>"
+            data-gso-track-surface="<?php echo esc_attr($surface); ?>"
+            data-gso-track-name="<?php echo esc_attr($content_name); ?>"
+            data-gso-track-target="<?php echo esc_attr($target_url); ?>"
+        >
             <div class="gso-overview-card-shell">
                 <div class="gso-overview-card-media">
                     <?php if ($image): ?>
@@ -211,7 +220,11 @@ class GSO_Shortcodes {
                     <div class="gso-overview-code-group">
                         <div class="gso-overview-code-row">
                             <span class="gso-overview-code-value"><?php echo esc_html($discount_code); ?></span>
-                            <button type="button" class="gso-overview-copy-button" data-gso-copy="<?php echo esc_attr($discount_code); ?>">
+                            <button
+                                type="button"
+                                class="gso-overview-copy-button"
+                                data-gso-copy="<?php echo esc_attr($discount_code); ?>"
+                            >
                                 Kopieren
                             </button>
                         </div>
@@ -220,7 +233,13 @@ class GSO_Shortcodes {
 
                 <?php if ($show_button): ?>
                     <?php if (!empty($target_url)): ?>
-                        <a class="gso-overview-button" href="<?php echo esc_url($target_url); ?>" target="_blank" rel="noopener noreferrer">
+                        <a
+                            class="gso-overview-button"
+                            href="<?php echo esc_url($target_url); ?>"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            data-gso-track-click="cta"
+                        >
                             <?php echo esc_html($cta_text); ?>
                         </a>
                     <?php else: ?>
