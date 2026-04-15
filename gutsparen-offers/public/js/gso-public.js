@@ -19,20 +19,35 @@ document.addEventListener('DOMContentLoaded', function() {
         const contentName = payload.name || ('Offer #' + payload.offerId);
         const contentPiece = payload.surface || 'offer';
         const contentTarget = payload.target || '';
+        const eventCategory = getOfferEventCategory(contentPiece);
 
         if (payload.event === 'impression') {
             tracker.push(['trackContentImpression', contentName, contentPiece, contentTarget]);
+            tracker.push(['trackEvent', eventCategory, 'impression', contentName]);
             return;
         }
 
         if (payload.event === 'click') {
             tracker.push(['trackContentInteraction', 'click', contentName, contentPiece, contentTarget]);
+            tracker.push(['trackEvent', eventCategory, 'cta_click', contentName]);
             return;
         }
 
         if (payload.event === 'copy') {
-            tracker.push(['trackEvent', 'GutSparen Offer', 'copy_code', contentName]);
+            tracker.push(['trackEvent', eventCategory, 'code_copy', contentName]);
         }
+    };
+
+    const getOfferEventCategory = function(surface) {
+        if (surface === 'gutsparen_banner') {
+            return 'GutSparen Offer | banner';
+        }
+
+        if (surface === 'gutsparen_overview') {
+            return 'GutSparen Offer | overview offers';
+        }
+
+        return 'GutSparen Offer';
     };
 
     const initTracking = function(root) {
